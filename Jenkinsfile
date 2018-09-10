@@ -9,7 +9,7 @@ pipeline {
     // We must also add NO_SCHEDULE: gke-preemtible=true taint in order to avoid scheduling other pods on nodes in this pool
     kubernetes {
         // Change from jenkins-maven label to be able to use our yaml configuration snippet
-        label "gke-preemptible-maven"
+        label "jenkins-x-maven"
         // and inherit from Jx Maven pod template
         inheritFrom "maven"
         // Add the following configuration to Jenkins builder pod template
@@ -17,22 +17,23 @@ pipeline {
 spec:
   # The node selector says that pod must be scheduled only on nodes that have specific label and value. 
   # Given the nature of preemptible VMs, the instance might not be available when it’s needed. 
-  #nodeSelector:
-  #  cloud.google.com/gke-preemptible: "true"
+  nodeSelector:
+    cloud.google.com/gke-preemptible: "true"
 
-  # Node affinity feature allows us to set up rules that kubernetes will follow during scheduling or execution of pods.
+  # Instead of nodeSelector, Node affinity feature allows us to set up rules that kubernetes will follow 
+  # during scheduling or execution of pods.
   # The affinity rule is saying that when kubernetes scheduling a new pod then it should prefer preemptible instance. 
   # Though if there is no available preemptible instance then it will be scheduled on a standard one. 
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: cloud.google.com/gke-preemptible
-            operator: In
-            values:
-            - "true"
+  #affinity:
+  #  nodeAffinity:
+  #    preferredDuringSchedulingIgnoredDuringExecution:
+  #    - weight: 1
+  #      preference:
+  #        matchExpressions:
+  #        - key: cloud.google.com/gke-preemptible
+  #          operator: In
+  #          values:
+  #          - "true"
             
   # Also, add toleration to GKE preemtible pool taint to the pod in order to run it on that node pool
   tolerations:
