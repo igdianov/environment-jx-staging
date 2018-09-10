@@ -6,7 +6,7 @@ This repository contains the example of Jenkinsfile pipeline with Kubernetes Plu
 GKE will add a label to each node `cloud.google.com/gke-preemptible`, so we can use it in our builder pod setup.
 We must also add `NO_SCHEDULE:gke-preemtible=true` taint in order to avoid scheduling other pods on nodes in this pool.
 
-After the preemptive node pool is created, we can customize Jenkins Kubernetes plugin to schedule pods on preemptive nodes using `nodeSelector` or `affinity` rules with taint `tolerations`:
+After the preemptive node pool is created, we can customize Jenkins Kubernetes plugin to schedule pods on preemptive nodes using either `nodeSelector` or `affinity` rules with taint `tolerations`:
 
 ```
 pipeline {
